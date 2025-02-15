@@ -8,10 +8,11 @@ import com.ordermanagerwriter.infrastructure.repository.ProductRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.text.MessageFormat;
 import java.util.List;
 
 import static com.ordermanagerwriter.AppConstants.ErrorMessages.PRODUCT_CREATION_FAILED;
-import static com.ordermanagerwriter.AppConstants.ErrorMessages.PRODUCT_NOT_FOUND;
+import static com.ordermanagerwriter.AppConstants.ErrorMessages.NOT_FOUND;
 
 @Service
 @AllArgsConstructor
@@ -25,14 +26,13 @@ public class ProductServiceImpl implements ProductService {
             var productEntity = ProductMapper.INSTANCE.toEntity(product);
             productRepository.save(productEntity);
         } catch (Exception e) {
-            throw new BusinessException(PRODUCT_CREATION_FAILED + e.getMessage());
-        }
+            throw new BusinessException(MessageFormat.format("Product creation failed: %s", e.getMessage()).toString());        }
     }
 
     @Override
     public Product findProductById(String productId) {
         var productEntity = productRepository.findById(productId)
-                .orElseThrow(() -> new BusinessException(PRODUCT_NOT_FOUND));
+                .orElseThrow(() -> new BusinessException(NOT_FOUND));
         return ProductMapper.INSTANCE.toModel(productEntity);
     }
 
@@ -47,7 +47,7 @@ public class ProductServiceImpl implements ProductService {
         try {
             productRepository.deleteById(productId);
         } catch (Exception e) {
-            throw new BusinessException(PRODUCT_NOT_FOUND);
+            throw new BusinessException(NOT_FOUND);
         }
     }
 }
