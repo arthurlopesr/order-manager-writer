@@ -3,7 +3,9 @@ package com.ordermanagerwriter.testUtils;
 
 import com.ordermanagerwriter.application.model.Category;
 import com.ordermanagerwriter.application.model.Product;
+import com.ordermanagerwriter.application.service.mapper.CategoryMapper;
 import com.ordermanagerwriter.application.service.mapper.ProductMapper;
+import com.ordermanagerwriter.infrastructure.entity.CategoryEntity;
 import com.ordermanagerwriter.infrastructure.entity.ProductEntity;
 import lombok.experimental.UtilityClass;
 
@@ -30,10 +32,19 @@ public class TestUtilityClass {
 
     public static Category createTestCategory() {
         return Category.builder()
-                .categoryId(UUID.randomUUID().toString())
+                .categoryId("test-category-id")
                 .name("Test Category")
                 .description("This is a test category")
                 .emoji("🍔")
+                .build();
+    }
+
+    public static CategoryEntity createTestCategoryEntity(Category category) {
+        return CategoryEntity.builder()
+                .categoryId(category.getCategoryId())
+                .name(category.getName())
+                .description(category.getDescription())
+                .emoji(category.getEmoji())
                 .build();
     }
 }

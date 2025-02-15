@@ -3,7 +3,6 @@ package com.ordermanagerwriter.application.service.impl;
 import com.ordermanagerwriter.application.exception.BusinessException;
 import com.ordermanagerwriter.application.model.Category;
 import com.ordermanagerwriter.infrastructure.entity.CategoryEntity;
-import com.ordermanagerwriter.infrastructure.entity.ProductEntity;
 import com.ordermanagerwriter.infrastructure.repository.CategoryRepository;
 import com.ordermanagerwriter.testUtils.TestUtilityClass;
 import org.junit.jupiter.api.BeforeEach;
@@ -13,6 +12,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+
+import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -30,9 +32,12 @@ class CategoryServiceImplTest {
 
     Category category;
 
+    CategoryEntity categoryEntity;
+
     @BeforeEach
     void setUp() {
         category = TestUtilityClass.createTestCategory();
+        categoryEntity = TestUtilityClass.createTestCategoryEntity(category);
     }
 
     @Test
@@ -52,5 +57,72 @@ class CategoryServiceImplTest {
         });
 
         assertEquals("Category creation failed: %s", exception.getMessage());
+    }
+
+    @Test
+    @DisplayName("Should find a category by id")
+    void findCategoryById() {
+        when(categoryRepository.findById(category.getCategoryId())).thenReturn(Optional.of(categoryEntity));
+
+        Category foundCategory = categoryService.findCategoryById(category.getCategoryId());
+
+        assertEquals(category, foundCategory);
+        verify(categoryRepository, times(1)).findById(category.getCategoryId());
+    }
+
+    @Test
+    @DisplayName("Should throw BusinessException when category not found")
+    void findCategoryByIdThrowsException() {
+        when(categoryRepository.findById(category.getCategoryId())).thenReturn(Optional.empty());
+
+        BusinessException exception = assertThrows(BusinessException.class, () -> {
+            categoryService.findCategoryById(category.getCategoryId());
+        });
+
+        assertEquals("Category not found", exception.getMessage());
+    }
+
+    @Test
+    @DisplayName("Should find all categories")
+    void findAllCategories() {
+        when(categoryRepository.findAll()).thenReturn(List.of(categoryEntity));
+
+        List<Category> categories = categoryService.findAllCategories();
+
+        assertEquals(List.of(category), categories);
+        verify(categoryRepository, times(1)).findAll();
+    }
+
+    @Test
+    @DisplayName("Should return empty list when no categories found")
+    void findAllCategories_withEmptyList() {
+        when(categoryRepository.findAll()).thenReturn(List.of());
+
+        List<Category> categories = categoryService.findAllCategories();
+
+        assertEquals(List.of(), categories);
+        verify(categoryRepository, times(1)).findAll();
+    }
+
+    @Test
+    @DisplayName("Should delete a category by id")
+    void deleteCategoryById() {
+        when(categoryRepository.findById(category.getCategoryId())).thenReturn(Optional.of(categoryEntity));
+
+        categoryService.deleteCategoryById(category.getCategoryId());
+
+        verify(categoryRepository, times(1)).delete(categoryEntity);
+    }
+
+    @Test
+    @DisplayName("Should throw BusinessException when category not found in deleteCategoryById")
+    void deleteCategoryByIdThrowsException() {
+        when(categoryRepository.findById(category.getCategoryId())).thenReturn(Optional.empty());
+
+        BusinessException exception = assertThrows(BusinessException.class, () -> {
+            categoryService.deleteCategoryById(category.getCategoryId());
+        });
+
+        assertEquals("Category not found", exception.getMessage());
     }
 }

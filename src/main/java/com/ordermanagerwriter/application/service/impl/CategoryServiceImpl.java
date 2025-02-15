@@ -29,16 +29,24 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public Category findCategoryById(String categoryId) {
-        return null;
+        var categoryEntity = categoryRepository.findById(categoryId)
+                .orElseThrow(() -> new BusinessException("Category not found"));
+        return CategoryMapper.INSTANCE.toModel(categoryEntity);
     }
 
     @Override
     public List<Category> findAllCategories() {
-        return List.of();
+        var categories = categoryRepository.findAll();
+        if (categories.isEmpty()) {
+            return List.of();
+        }
+        return CategoryMapper.INSTANCE.toModelList(categories);
     }
 
     @Override
     public void deleteCategoryById(String categoryId) {
-
+        var categoryEntity = categoryRepository.findById(categoryId)
+                .orElseThrow(() -> new BusinessException("Category not found"));
+        categoryRepository.delete(categoryEntity);
     }
 }
