@@ -1,6 +1,7 @@
 package com.ordermanagerwriter.application.service.impl;
 
 import com.ordermanagerwriter.application.exception.BusinessException;
+import com.ordermanagerwriter.application.exception.ProductNotFoundException;
 import com.ordermanagerwriter.application.model.Product;
 import com.ordermanagerwriter.application.service.ProductService;
 import com.ordermanagerwriter.application.service.mapper.ProductMapper;
@@ -10,8 +11,6 @@ import org.springframework.stereotype.Service;
 
 import java.text.MessageFormat;
 import java.util.List;
-
-import static com.ordermanagerwriter.AppConstants.ErrorMessages.NOT_FOUND;
 
 @Service
 @AllArgsConstructor
@@ -32,7 +31,7 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public Product findProductById(String productId) {
         var productEntity = productRepository.findById(productId)
-                .orElseThrow(() -> new BusinessException(MessageFormat.format(NOT_FOUND, "Product")));
+                .orElseThrow(() -> ProductNotFoundException.create(productId));
         return ProductMapper.INSTANCE.toModel(productEntity);
     }
 
@@ -47,7 +46,7 @@ public class ProductServiceImpl implements ProductService {
         try {
             productRepository.deleteById(productId);
         } catch (Exception e) {
-            throw new BusinessException(MessageFormat.format(NOT_FOUND, "Product"));
+            throw ProductNotFoundException.create(productId);
         }
     }
 }
