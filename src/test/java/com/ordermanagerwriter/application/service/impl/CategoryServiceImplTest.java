@@ -1,6 +1,6 @@
 package com.ordermanagerwriter.application.service.impl;
 
-import com.ordermanagerwriter.application.exception.BusinessException;
+import com.ordermanagerwriter.application.exception.CategoryNotFoundException;
 import com.ordermanagerwriter.application.model.Category;
 import com.ordermanagerwriter.infrastructure.entity.CategoryEntity;
 import com.ordermanagerwriter.infrastructure.repository.CategoryRepository;
@@ -52,11 +52,11 @@ class CategoryServiceImplTest {
     void createCategoryThrowsException() {
         doThrow(new RuntimeException("Database error")).when(categoryRepository).save(any());
 
-        BusinessException exception = assertThrows(BusinessException.class, () -> {
+        CategoryNotFoundException exception = assertThrows(CategoryNotFoundException.class, () -> {
             categoryService.createCategory(category);
         });
 
-        assertEquals("Category creation failed: %s", exception.getMessage());
+        assertEquals("Category with ID test-category-id not found", exception.getMessage());
     }
 
     @Test
@@ -74,12 +74,11 @@ class CategoryServiceImplTest {
     @DisplayName("Should throw BusinessException when category not found")
     void findCategoryByIdThrowsException() {
         when(categoryRepository.findById(category.getCategoryId())).thenReturn(Optional.empty());
-
-        BusinessException exception = assertThrows(BusinessException.class, () -> {
+        CategoryNotFoundException exception = assertThrows(CategoryNotFoundException.class, () -> {
             categoryService.findCategoryById(category.getCategoryId());
         });
 
-        assertEquals("Category not found", exception.getMessage());
+        assertEquals("Category with ID test-category-id not found", exception.getMessage());
     }
 
     @Test
@@ -107,22 +106,19 @@ class CategoryServiceImplTest {
     @Test
     @DisplayName("Should delete a category by id")
     void deleteCategoryById() {
-        when(categoryRepository.findById(category.getCategoryId())).thenReturn(Optional.of(categoryEntity));
-
         categoryService.deleteCategoryById(category.getCategoryId());
 
-        verify(categoryRepository, times(1)).delete(categoryEntity);
+        verify(categoryRepository, times(1)).deleteById(category.getCategoryId());
     }
 
     @Test
     @DisplayName("Should throw BusinessException when category not found in deleteCategoryById")
     void deleteCategoryByIdThrowsException() {
-        when(categoryRepository.findById(category.getCategoryId())).thenReturn(Optional.empty());
-
-        BusinessException exception = assertThrows(BusinessException.class, () -> {
+        doThrow(new RuntimeException("Database error")).when(categoryRepository).deleteById(any());
+        CategoryNotFoundException exception = assertThrows(CategoryNotFoundException.class, () -> {
             categoryService.deleteCategoryById(category.getCategoryId());
         });
 
-        assertEquals("Category not found", exception.getMessage());
+        assertEquals("Category with ID test-category-id not found", exception.getMessage());
     }
 }

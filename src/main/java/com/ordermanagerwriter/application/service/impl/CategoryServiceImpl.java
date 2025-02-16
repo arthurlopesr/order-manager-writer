@@ -1,6 +1,6 @@
 package com.ordermanagerwriter.application.service.impl;
 
-import com.ordermanagerwriter.application.exception.BusinessException;
+import com.ordermanagerwriter.application.exception.CategoryNotFoundException;
 import com.ordermanagerwriter.application.model.Category;
 import com.ordermanagerwriter.application.service.CategoryService;
 import com.ordermanagerwriter.application.service.mapper.CategoryMapper;
@@ -8,7 +8,6 @@ import com.ordermanagerwriter.infrastructure.repository.CategoryRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.text.MessageFormat;
 import java.util.List;
 
 @Service
@@ -23,14 +22,14 @@ public class CategoryServiceImpl implements CategoryService {
             var categoryEntity = CategoryMapper.INSTANCE.toEntity(category);
             categoryRepository.save(categoryEntity);
         } catch (Exception e) {
-            throw new BusinessException(MessageFormat.format("Category creation failed: %s", e.getMessage()).toString());
+            throw CategoryNotFoundException.create(category.getCategoryId());
         }
     }
 
     @Override
     public Category findCategoryById(String categoryId) {
         var categoryEntity = categoryRepository.findById(categoryId)
-                .orElseThrow(() -> new BusinessException("Category not found"));
+                .orElseThrow(() -> CategoryNotFoundException.create(categoryId));
         return CategoryMapper.INSTANCE.toModel(categoryEntity);
     }
 
@@ -45,8 +44,10 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public void deleteCategoryById(String categoryId) {
-        var categoryEntity = categoryRepository.findById(categoryId)
-                .orElseThrow(() -> new BusinessException("Category not found"));
-        categoryRepository.delete(categoryEntity);
+        try {
+            categoryRepository.deleteById(categoryId);
+        } catch (Exception e) {
+            throw CategoryNotFoundException.create(categoryId);
+        }
     }
 }
