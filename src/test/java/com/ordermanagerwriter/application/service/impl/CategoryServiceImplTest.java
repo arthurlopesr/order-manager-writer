@@ -1,6 +1,6 @@
 package com.ordermanagerwriter.application.service.impl;
 
-import com.ordermanagerwriter.application.exception.BusinessException;
+import com.ordermanagerwriter.application.exception.CategoryNotFoundException;
 import com.ordermanagerwriter.application.model.Category;
 import com.ordermanagerwriter.infrastructure.entity.CategoryEntity;
 import com.ordermanagerwriter.infrastructure.repository.CategoryRepository;
@@ -16,7 +16,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.List;
 import java.util.Optional;
 
-import static com.ordermanagerwriter.AppConstants.ErrorMessages.NOT_FOUND;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
@@ -53,11 +52,11 @@ class CategoryServiceImplTest {
     void createCategoryThrowsException() {
         doThrow(new RuntimeException("Database error")).when(categoryRepository).save(any());
 
-        BusinessException exception = assertThrows(BusinessException.class, () -> {
+        CategoryNotFoundException exception = assertThrows(CategoryNotFoundException.class, () -> {
             categoryService.createCategory(category);
         });
 
-        assertEquals("Category creation failed: %s", exception.getMessage());
+        assertEquals("Category with ID test-category-id not found", exception.getMessage());
     }
 
     @Test
@@ -75,11 +74,11 @@ class CategoryServiceImplTest {
     @DisplayName("Should throw BusinessException when category not found")
     void findCategoryByIdThrowsException() {
         when(categoryRepository.findById(category.getCategoryId())).thenReturn(Optional.empty());
-        BusinessException exception = assertThrows(BusinessException.class, () -> {
+        CategoryNotFoundException exception = assertThrows(CategoryNotFoundException.class, () -> {
             categoryService.findCategoryById(category.getCategoryId());
         });
 
-        assertEquals(NOT_FOUND, exception.getMessage());
+        assertEquals("Category with ID test-category-id not found", exception.getMessage());
     }
 
     @Test
@@ -116,10 +115,10 @@ class CategoryServiceImplTest {
     @DisplayName("Should throw BusinessException when category not found in deleteCategoryById")
     void deleteCategoryByIdThrowsException() {
         doThrow(new RuntimeException("Database error")).when(categoryRepository).deleteById(any());
-        BusinessException exception = assertThrows(BusinessException.class, () -> {
+        CategoryNotFoundException exception = assertThrows(CategoryNotFoundException.class, () -> {
             categoryService.deleteCategoryById(category.getCategoryId());
         });
 
-        assertEquals(NOT_FOUND, exception.getMessage());
+        assertEquals("Category with ID test-category-id not found", exception.getMessage());
     }
 }
