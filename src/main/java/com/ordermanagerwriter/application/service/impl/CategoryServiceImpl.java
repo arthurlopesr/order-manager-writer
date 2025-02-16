@@ -11,6 +11,8 @@ import org.springframework.stereotype.Service;
 import java.text.MessageFormat;
 import java.util.List;
 
+import static com.ordermanagerwriter.AppConstants.ErrorMessages.NOT_FOUND;
+
 @Service
 @AllArgsConstructor
 public class CategoryServiceImpl implements CategoryService {
@@ -30,7 +32,7 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public Category findCategoryById(String categoryId) {
         var categoryEntity = categoryRepository.findById(categoryId)
-                .orElseThrow(() -> new BusinessException("Category not found"));
+                .orElseThrow(() -> new BusinessException(MessageFormat.format(NOT_FOUND, "Category")));
         return CategoryMapper.INSTANCE.toModel(categoryEntity);
     }
 
@@ -45,8 +47,10 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public void deleteCategoryById(String categoryId) {
-        var categoryEntity = categoryRepository.findById(categoryId)
-                .orElseThrow(() -> new BusinessException("Category not found"));
-        categoryRepository.delete(categoryEntity);
+        try {
+            categoryRepository.deleteById(categoryId);
+        } catch (Exception e) {
+            throw new BusinessException(MessageFormat.format(NOT_FOUND, "Category"));
+        }
     }
 }

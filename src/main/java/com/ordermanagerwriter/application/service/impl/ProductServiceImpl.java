@@ -11,7 +11,6 @@ import org.springframework.stereotype.Service;
 import java.text.MessageFormat;
 import java.util.List;
 
-import static com.ordermanagerwriter.AppConstants.ErrorMessages.PRODUCT_CREATION_FAILED;
 import static com.ordermanagerwriter.AppConstants.ErrorMessages.NOT_FOUND;
 
 @Service
@@ -26,13 +25,14 @@ public class ProductServiceImpl implements ProductService {
             var productEntity = ProductMapper.INSTANCE.toEntity(product);
             productRepository.save(productEntity);
         } catch (Exception e) {
-            throw new BusinessException(MessageFormat.format("Product creation failed: %s", e.getMessage()).toString());        }
+            throw new BusinessException(MessageFormat.format("Product creation failed: %s", e.getMessage()).toString());
+        }
     }
 
     @Override
     public Product findProductById(String productId) {
         var productEntity = productRepository.findById(productId)
-                .orElseThrow(() -> new BusinessException(NOT_FOUND));
+                .orElseThrow(() -> new BusinessException(MessageFormat.format(NOT_FOUND, "Product")));
         return ProductMapper.INSTANCE.toModel(productEntity);
     }
 
@@ -47,7 +47,7 @@ public class ProductServiceImpl implements ProductService {
         try {
             productRepository.deleteById(productId);
         } catch (Exception e) {
-            throw new BusinessException(NOT_FOUND);
+            throw new BusinessException(MessageFormat.format(NOT_FOUND, "Product"));
         }
     }
 }

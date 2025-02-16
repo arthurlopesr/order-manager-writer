@@ -16,6 +16,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.List;
 import java.util.Optional;
 
+import static com.ordermanagerwriter.AppConstants.ErrorMessages.NOT_FOUND;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
@@ -74,12 +75,11 @@ class CategoryServiceImplTest {
     @DisplayName("Should throw BusinessException when category not found")
     void findCategoryByIdThrowsException() {
         when(categoryRepository.findById(category.getCategoryId())).thenReturn(Optional.empty());
-
         BusinessException exception = assertThrows(BusinessException.class, () -> {
             categoryService.findCategoryById(category.getCategoryId());
         });
 
-        assertEquals("Category not found", exception.getMessage());
+        assertEquals(NOT_FOUND, exception.getMessage());
     }
 
     @Test
@@ -107,22 +107,19 @@ class CategoryServiceImplTest {
     @Test
     @DisplayName("Should delete a category by id")
     void deleteCategoryById() {
-        when(categoryRepository.findById(category.getCategoryId())).thenReturn(Optional.of(categoryEntity));
-
         categoryService.deleteCategoryById(category.getCategoryId());
 
-        verify(categoryRepository, times(1)).delete(categoryEntity);
+        verify(categoryRepository, times(1)).deleteById(category.getCategoryId());
     }
 
     @Test
     @DisplayName("Should throw BusinessException when category not found in deleteCategoryById")
     void deleteCategoryByIdThrowsException() {
-        when(categoryRepository.findById(category.getCategoryId())).thenReturn(Optional.empty());
-
+        doThrow(new RuntimeException("Database error")).when(categoryRepository).deleteById(any());
         BusinessException exception = assertThrows(BusinessException.class, () -> {
             categoryService.deleteCategoryById(category.getCategoryId());
         });
 
-        assertEquals("Category not found", exception.getMessage());
+        assertEquals(NOT_FOUND, exception.getMessage());
     }
 }
