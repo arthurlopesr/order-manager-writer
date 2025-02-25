@@ -13,7 +13,7 @@ public class Product {
     private String productId;
     private String name;
     private String description;
-    private String category;
+    private String categoryId;
     private String price;
     private String ingredients;
     private String imageId;

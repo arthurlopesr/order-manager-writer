@@ -3,7 +3,6 @@ package com.ordermanagerwriter.testUtils;
 
 import com.ordermanagerwriter.application.model.Category;
 import com.ordermanagerwriter.application.model.Product;
-import com.ordermanagerwriter.application.service.mapper.CategoryMapper;
 import com.ordermanagerwriter.application.service.mapper.ProductMapper;
 import com.ordermanagerwriter.infrastructure.entity.CategoryEntity;
 import com.ordermanagerwriter.infrastructure.entity.ProductEntity;
@@ -20,7 +19,7 @@ public class TestUtilityClass {
                 .name("Test Product")
                 .description("This is a test product")
                 .price("100,00")
-                .category("Test Category")
+                .categoryId("e829e6b4-32f7-41b8-aeb6-b408df551121")
                 .imageId("test-image-id")
                 .ingredients("Test Ingredients")
                 .build();
