@@ -1,15 +1,16 @@
 package com.ordermanagerwriter.application.service.impl;
 
 import com.ordermanagerwriter.application.exception.BusinessException;
+import com.ordermanagerwriter.application.exception.CategoryNotFoundException;
 import com.ordermanagerwriter.application.exception.ProductNotFoundException;
 import com.ordermanagerwriter.application.model.Product;
 import com.ordermanagerwriter.application.service.ProductService;
 import com.ordermanagerwriter.application.service.mapper.ProductMapper;
+import com.ordermanagerwriter.infrastructure.repository.CategoryRepository;
 import com.ordermanagerwriter.infrastructure.repository.ProductRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.text.MessageFormat;
 import java.util.List;
 
 @Service
@@ -17,14 +18,18 @@ import java.util.List;
 public class ProductServiceImpl implements ProductService {
 
     private final ProductRepository productRepository;
+    private final CategoryRepository categoryRepository;
 
     @Override
     public void createProduct(Product product) {
         try {
+            var categoryEntity = categoryRepository.findById(product.getCategoryId())
+                    .orElseThrow(() -> new CategoryNotFoundException(product.getCategoryId()));
             var productEntity = ProductMapper.INSTANCE.toEntity(product);
+            productEntity.setCategoryId(categoryEntity.getCategoryId());
             productRepository.save(productEntity);
         } catch (Exception e) {
-            throw new BusinessException(MessageFormat.format("Product creation failed: %s", e.getMessage()).toString());
+            throw new BusinessException(String.format("Product creation failed: %s", e.getMessage()).toString());
         }
     }
 
