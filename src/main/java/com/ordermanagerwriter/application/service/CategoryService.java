@@ -1,6 +1,6 @@
 package com.ordermanagerwriter.application.service;
 
-import com.ordermanagerwriter.application.model.Category;
+import com.ordermanagerwriter.application.domain.model.Category;
 
 import java.util.List;
 

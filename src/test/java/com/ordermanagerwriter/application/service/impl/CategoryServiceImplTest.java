@@ -1,7 +1,7 @@
 package com.ordermanagerwriter.application.service.impl;
 
 import com.ordermanagerwriter.application.exception.CategoryNotFoundException;
-import com.ordermanagerwriter.application.model.Category;
+import com.ordermanagerwriter.application.domain.model.Category;
 import com.ordermanagerwriter.infrastructure.entity.CategoryEntity;
 import com.ordermanagerwriter.infrastructure.repository.CategoryRepository;
 import com.ordermanagerwriter.testUtils.TestUtilityClass;

@@ -1,6 +1,6 @@
 package com.ordermanagerwriter.infrastructure.controller;
 
-import com.ordermanagerwriter.application.model.Category;
+import com.ordermanagerwriter.application.domain.model.Category;
 import com.ordermanagerwriter.application.service.CategoryService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;

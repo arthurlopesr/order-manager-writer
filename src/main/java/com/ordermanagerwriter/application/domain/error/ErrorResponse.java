@@ -1,4 +1,4 @@
-package com.ordermanagerwriter.application.model.error;
+package com.ordermanagerwriter.application.domain.error;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

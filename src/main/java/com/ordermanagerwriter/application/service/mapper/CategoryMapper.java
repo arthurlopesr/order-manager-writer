@@ -1,6 +1,6 @@
 package com.ordermanagerwriter.application.service.mapper;
 
-import com.ordermanagerwriter.application.model.Category;
+import com.ordermanagerwriter.application.domain.model.Category;
 import com.ordermanagerwriter.infrastructure.entity.CategoryEntity;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;

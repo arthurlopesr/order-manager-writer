@@ -1,7 +1,13 @@
 package com.ordermanagerwriter.infrastructure.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 @Entity
 @Getter
@@ -25,4 +31,8 @@ public class CategoryEntity {
 
     @Column(name = "emoji")
     private String emoji;
+
+    @OneToMany(mappedBy = "category")
+    @JsonIgnore
+    private List<ProductEntity> products = new ArrayList<>();
 }
