@@ -3,6 +3,11 @@ package com.ordermanagerwriter.infrastructure.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 @Entity
 @Getter
 @Builder
@@ -23,9 +28,6 @@ public class ProductEntity {
     @Column(name = "description")
     private String description;
 
-    @JoinColumn(name = "category_id", nullable = false)
-    private String categoryId;
-
     @Column(name = "price")
     private String price;
 
@@ -34,4 +36,9 @@ public class ProductEntity {
 
     @Column(name = "image_id")
     private String imageId;
+
+    @ManyToOne
+    @JoinColumn(name = "category_id", nullable = false)
+    private CategoryEntity category;
+
 }

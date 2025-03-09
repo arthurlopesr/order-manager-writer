@@ -1,9 +1,10 @@
 package com.ordermanagerwriter.application.service.impl;
 
+import com.ordermanagerwriter.application.domain.dto.ProductDTO;
 import com.ordermanagerwriter.application.exception.BusinessException;
 import com.ordermanagerwriter.application.exception.CategoryNotFoundException;
 import com.ordermanagerwriter.application.exception.ProductNotFoundException;
-import com.ordermanagerwriter.application.model.Product;
+import com.ordermanagerwriter.application.domain.model.Product;
 import com.ordermanagerwriter.application.service.ProductService;
 import com.ordermanagerwriter.application.service.mapper.ProductMapper;
 import com.ordermanagerwriter.infrastructure.repository.CategoryRepository;
@@ -21,12 +22,12 @@ public class ProductServiceImpl implements ProductService {
     private final CategoryRepository categoryRepository;
 
     @Override
-    public void createProduct(Product product) {
+    public void createProduct(ProductDTO product) {
         try {
-            var categoryEntity = categoryRepository.findById(product.getCategoryId())
-                    .orElseThrow(() -> new CategoryNotFoundException(product.getCategoryId()));
-            var productEntity = ProductMapper.INSTANCE.toEntity(product);
-            productEntity.setCategoryId(categoryEntity.getCategoryId());
+            var categoryEntity = categoryRepository.findById(product.categoryId())
+                    .orElseThrow(() -> new CategoryNotFoundException(product.categoryId()));
+            var productEntity = ProductMapper.INSTANCE.dtoToEntity(product);
+            productEntity.setCategory(categoryEntity);
             productRepository.save(productEntity);
         } catch (Exception e) {
             throw new BusinessException(String.format("Product creation failed: %s", e.getMessage()).toString());

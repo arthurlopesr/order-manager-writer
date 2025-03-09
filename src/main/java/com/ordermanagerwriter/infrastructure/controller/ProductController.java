@@ -1,6 +1,7 @@
 package com.ordermanagerwriter.infrastructure.controller;
 
-import com.ordermanagerwriter.application.model.Product;
+import com.ordermanagerwriter.application.domain.dto.ProductDTO;
+import com.ordermanagerwriter.application.domain.model.Product;
 import com.ordermanagerwriter.application.service.ProductService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -17,7 +18,7 @@ public class ProductController {
     private final ProductService productService;
 
     @PostMapping
-    public ResponseEntity<Void> createProduct(@RequestBody Product product) {
+    public ResponseEntity<Void> createProduct(@RequestBody ProductDTO product) {
         productService.createProduct(product);
         return ResponseEntity.status(HttpStatus.CREATED.value()).build();
     }

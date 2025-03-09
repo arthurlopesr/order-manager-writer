@@ -1,7 +1,7 @@
 package com.ordermanagerwriter.application.service.impl;
 
+import com.ordermanagerwriter.application.domain.dto.ProductDTO;
 import com.ordermanagerwriter.application.exception.BusinessException;
-import com.ordermanagerwriter.application.model.Product;
 import com.ordermanagerwriter.infrastructure.entity.CategoryEntity;
 import com.ordermanagerwriter.infrastructure.entity.ProductEntity;
 import com.ordermanagerwriter.infrastructure.repository.CategoryRepository;
@@ -34,20 +34,20 @@ class ProductServiceImplTest {
     @Mock
     private ProductRepository productRepository;
 
-    private Product product;
+    private ProductDTO product;
     private CategoryEntity categoryEntity;
 
     @BeforeEach
     void setUp() {
         product = TestUtilityClass.createTestProduct();
         categoryEntity = new CategoryEntity();
-        categoryEntity.setCategoryId(product.getCategoryId());
+        categoryEntity.setCategoryId(product.categoryId());
     }
 
     @Test
     @DisplayName("Should create a product successfully")
     void createProduct() {
-        when(categoryRepository.findById(product.getCategoryId())).thenReturn(Optional.of(categoryEntity));
+        when(categoryRepository.findById(product.categoryId())).thenReturn(Optional.of(categoryEntity));
         productService.createProduct(product);
         verify(productRepository, times(1)).save(any(ProductEntity.class));
     }
@@ -55,7 +55,7 @@ class ProductServiceImplTest {
     @Test
     @DisplayName("Should throw CategoryNotFoundException when category is not found")
     void createProductThrowsCategoryNotFoundException() {
-        when(categoryRepository.findById(product.getCategoryId())).thenReturn(Optional.empty());
+        when(categoryRepository.findById(product.categoryId())).thenReturn(Optional.empty());
         assertThrows(BusinessException.class, () -> productService.createProduct(product));
         verify(productRepository, never()).save(any(ProductEntity.class));
     }
@@ -63,7 +63,7 @@ class ProductServiceImplTest {
     @Test
     @DisplayName("Should throw BusinessException when product creation fails")
     void createProductThrowsBusinessException() {
-        when(categoryRepository.findById(product.getCategoryId())).thenReturn(Optional.of(categoryEntity));
+        when(categoryRepository.findById(product.categoryId())).thenReturn(Optional.of(categoryEntity));
         doThrow(new RuntimeException("Database error")).when(productRepository).save(any(ProductEntity.class));
         BusinessException exception = assertThrows(BusinessException.class, () -> productService.createProduct(product));
         assertEquals("Product creation failed: Database error", exception.getMessage());

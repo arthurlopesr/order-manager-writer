@@ -2,7 +2,7 @@ package com.ordermanagerwriter.application.exception.handler;
 
 import com.ordermanagerwriter.application.exception.BusinessException;
 import com.ordermanagerwriter.application.exception.CategoryNotFoundException;
-import com.ordermanagerwriter.application.model.error.ErrorResponse;
+import com.ordermanagerwriter.application.domain.error.ErrorResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
