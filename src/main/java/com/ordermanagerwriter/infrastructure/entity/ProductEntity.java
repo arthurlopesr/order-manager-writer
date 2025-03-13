@@ -26,8 +26,9 @@ public class ProductEntity {
     @Column(name = "price", nullable = false)
     private String price;
 
-    @Column(name = "ingredients")
-    private String ingredients;
+    @OneToMany
+    @JoinColumn(name = "ingredient_id",  nullable = false)
+    private IngredientEntity ingredients;
 
     @Column(name = "image_id")
     private String imageId;

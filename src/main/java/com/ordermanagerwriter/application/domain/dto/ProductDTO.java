@@ -1,6 +1,9 @@
 package com.ordermanagerwriter.application.domain.dto;
 
+import com.ordermanagerwriter.application.domain.model.Ingredient;
 import lombok.Builder;
+
+import java.util.List;
 
 @Builder(toBuilder = true)
 public record ProductDTO(
@@ -9,7 +12,7 @@ public record ProductDTO(
         String description,
         String categoryId,
         String price,
-        String ingredients,
+        List<Ingredient> ingredients,
         String imageId
 ) {
 }
