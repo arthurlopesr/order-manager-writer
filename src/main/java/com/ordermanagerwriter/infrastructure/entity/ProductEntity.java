@@ -3,11 +3,6 @@ package com.ordermanagerwriter.infrastructure.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
 @Entity
 @Getter
 @Builder
@@ -22,13 +17,13 @@ public class ProductEntity {
     @GeneratedValue(strategy = GenerationType.UUID)
     private String productId;
 
-    @Column(name = "name")
+    @Column(name = "name", nullable = false)
     private String name;
 
-    @Column(name = "description")
+    @Column(name = "description", unique = true, nullable = false)
     private String description;
 
-    @Column(name = "price")
+    @Column(name = "price", nullable = false)
     private String price;
 
     @Column(name = "ingredients")
