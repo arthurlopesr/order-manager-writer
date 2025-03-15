@@ -21,7 +21,7 @@ public class IngredientEntity {
     @Column(name = "name", nullable = false)
     private String name;
 
-    @ManyToOne(mappedBy = "products")
-    @JsonIgnore
+    @ManyToOne
+    @JoinColumn(name = "product_id", nullable = false)
     private ProductEntity product;
 }
