@@ -3,11 +3,13 @@ package com.ordermanagerwriter.application.service.impl;
 import com.ordermanagerwriter.application.domain.dto.AssociateProductIngredientsDTO;
 import com.ordermanagerwriter.application.domain.dto.ProductDTO;
 import com.ordermanagerwriter.application.domain.model.Product;
+import com.ordermanagerwriter.application.domain.model.ProductIngredients;
 import com.ordermanagerwriter.application.exception.BusinessException;
 import com.ordermanagerwriter.application.exception.CategoryNotFoundException;
 import com.ordermanagerwriter.application.exception.IngredientNotFoundException;
 import com.ordermanagerwriter.application.exception.ProductNotFoundException;
 import com.ordermanagerwriter.application.service.ProductService;
+import com.ordermanagerwriter.application.service.mapper.IngredientMapper;
 import com.ordermanagerwriter.application.service.mapper.ProductMapper;
 import com.ordermanagerwriter.infrastructure.entity.CategoryEntity;
 import com.ordermanagerwriter.infrastructure.entity.ProductsIngredientId;
@@ -51,11 +53,19 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public Product findProductById(String productId) {
+        var productIngredients = productsIngredientsRepository.findByProductsIngredientIdProductId(productId);
+        var ingredientModels = productIngredients.stream()
+                .map(ProductsIngredientsEntity::getIngredient)
+                .map(IngredientMapper.INSTANCE::toModel)
+                .toList();
+
         var productEntity = productRepository.findById(productId)
                 .orElseThrow(() -> ProductNotFoundException.create(productId));
-        return ProductMapper.INSTANCE.toModel(productEntity);
-    }
 
+        var productModel = ProductMapper.INSTANCE.toModel(productEntity);
+        productModel.setIngredients(ingredientModels);
+        return productModel;
+    }
     @Override
     public List<Product> findAllProducts() {
         var productEntities = productRepository.findAll();

@@ -6,10 +6,10 @@ import com.ordermanagerwriter.application.domain.dto.IngredientDTO;
 import com.ordermanagerwriter.application.domain.dto.ProductDTO;
 import com.ordermanagerwriter.application.domain.model.Category;
 import com.ordermanagerwriter.application.domain.model.Ingredient;
+import com.ordermanagerwriter.application.domain.model.Product;
+import com.ordermanagerwriter.application.domain.model.ProductIngredients;
 import com.ordermanagerwriter.application.service.mapper.ProductMapper;
-import com.ordermanagerwriter.infrastructure.entity.CategoryEntity;
-import com.ordermanagerwriter.infrastructure.entity.IngredientEntity;
-import com.ordermanagerwriter.infrastructure.entity.ProductEntity;
+import com.ordermanagerwriter.infrastructure.entity.*;
 import lombok.experimental.UtilityClass;
 
 import java.util.List;
@@ -33,6 +33,18 @@ public class TestUtilityClass {
 
     public static ProductEntity createTestProductEntity(ProductDTO product) {
         return ProductMapper.INSTANCE.dtoToEntity(product);
+    }
+
+    public static Product createTestProductModel() {
+        return Product.builder()
+                .productId(UUID.randomUUID().toString())
+                .name("Test Product")
+                .description("This is a test product")
+                .price("100,00")
+                .category(createTestCategory())
+                .imageId("test-image-id")
+                .ingredients(createTestIngredients())
+                .build();
     }
 
     public static Category createTestCategory() {
@@ -78,6 +90,54 @@ public class TestUtilityClass {
         return IngredientEntity.builder()
                 .ingredientId(ingredient.getIngredientId())
                 .name(ingredient.getName())
+                .build();
+    }
+
+    public static List<ProductsIngredientsEntity> createTestProductsIngredientsEntity(ProductEntity productEntity, List<IngredientEntity> ingredientEntities) {
+        return ingredientEntities.stream()
+                .map(ingredientEntity -> {
+                    var productsIngredientId = ProductsIngredientId.builder()
+                            .productId(productEntity.getProductId())
+                            .ingredientId(ingredientEntity.getIngredientId())
+                            .build();
+
+                    return ProductsIngredientsEntity.builder()
+                            .productsIngredientId(productsIngredientId)
+                            .ingredient(ingredientEntity)
+                            .product(productEntity)
+                            .productName(productEntity.getName())
+                            .build();
+                })
+                .collect(Collectors.toList());
+    }
+
+    public static ProductsIngredientsEntity createProductsIngredientsEntity(ProductEntity productEntity, IngredientEntity ingredientEntity) {
+        var productsIngredientId = ProductsIngredientId.builder()
+                .productId(productEntity.getProductId())
+                .ingredientId(ingredientEntity.getIngredientId())
+                .build();
+
+        return ProductsIngredientsEntity.builder()
+                .productsIngredientId(productsIngredientId)
+                .ingredient(ingredientEntity)
+                .product(productEntity)
+                .productName(productEntity.getName())
+                .build();
+    }
+
+    public static List<IngredientEntity> createTestIngredientEntities(List<Ingredient> ingredients) {
+        return ingredients.stream()
+                .map(ingredient -> IngredientEntity.builder()
+                        .ingredientId(ingredient.getIngredientId())
+                        .name(ingredient.getName())
+                        .build())
+                .collect(Collectors.toList());
+    }
+
+    public static ProductIngredients createTestProductIngredients() {
+        return ProductIngredients.builder()
+                .product(createTestProductModel())
+                .ingredient(createTestIngredients())
                 .build();
     }
 

@@ -1,7 +1,10 @@
 package com.ordermanagerwriter.application.service.impl;
 
 import com.ordermanagerwriter.application.domain.dto.ProductDTO;
+import com.ordermanagerwriter.application.domain.model.ProductIngredients;
 import com.ordermanagerwriter.application.exception.BusinessException;
+import com.ordermanagerwriter.application.service.mapper.IngredientMapper;
+import com.ordermanagerwriter.application.service.mapper.ProductMapper;
 import com.ordermanagerwriter.infrastructure.entity.*;
 import com.ordermanagerwriter.infrastructure.repository.CategoryRepository;
 import com.ordermanagerwriter.infrastructure.repository.IngredientRepository;
@@ -16,7 +19,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 import static com.ordermanagerwriter.testUtils.TestUtilityClass.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -46,6 +51,8 @@ class ProductServiceImplTest {
     private CategoryEntity categoryEntity;
     private IngredientEntity ingredientEntity;
     private ProductEntity productEntity;
+    private ProductsIngredientsEntity productsIngredientsEntity;
+    private ProductIngredients productIngredients;
 
     @BeforeEach
     void setUp() {
@@ -54,6 +61,8 @@ class ProductServiceImplTest {
         categoryEntity.setCategoryId(product.categoryId());
         ingredientEntity = createTestIngredientEntity(createTestIngredient());
         productEntity = createProductEntity(product);
+        productsIngredientsEntity = createProductsIngredientsEntity(productEntity, ingredientEntity);
+        productIngredients = createTestProductIngredients();
     }
 
     @Test
@@ -99,10 +108,18 @@ class ProductServiceImplTest {
         assertEquals("Product creation failed: Database error", exception.getMessage());
     }
 
-//    @Test
-//    @DisplayName("Should return a product successfully")
-//    void findProductById() {
-//        when(productsIngredientsRepository.findByProductsIngredientIdProductId(product.productId())).thenReturn(null);
-//        when(productRepository.findById(product.productId())).thenReturn(Optional.of(productEntity));
-//    }
+    @Test
+    @DisplayName("Should return a product successfully")
+    void findProductById() {
+        when(productsIngredientsRepository.findByProductsIngredientIdProductId(product.productId())).thenReturn(List.of(productsIngredientsEntity));
+        var ingredientModels = Stream.of(productsIngredientsEntity)
+                .map(ProductsIngredientsEntity::getIngredient)
+                .map(IngredientMapper.INSTANCE::toModel)
+                .toList();
+        when(productRepository.findById(product.productId())).thenReturn(Optional.of(productEntity));
+        var productModel = ProductMapper.INSTANCE.toModel(productEntity);
+        productModel.setIngredients(ingredientModels);
+        var result = productService.findProductById(product.productId());
+        assertEquals(productModel, result);
+    }
 }
