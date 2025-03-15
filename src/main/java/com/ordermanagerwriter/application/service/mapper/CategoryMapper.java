@@ -1,5 +1,6 @@
 package com.ordermanagerwriter.application.service.mapper;
 
+import com.ordermanagerwriter.application.domain.dto.CategoryDTO;
 import com.ordermanagerwriter.application.domain.model.Category;
 import com.ordermanagerwriter.infrastructure.entity.CategoryEntity;
 import org.mapstruct.Mapper;
@@ -11,7 +12,7 @@ import java.util.List;
 public interface CategoryMapper {
     Category toModel(CategoryEntity category);
 
-    CategoryEntity toEntity(Category product);
+    CategoryEntity dtoToEntity(CategoryDTO product);
 
     List<Category> toModelList(List<CategoryEntity> categoryEntities);
 

@@ -1,5 +1,6 @@
 package com.ordermanagerwriter.application.service.impl;
 
+import com.ordermanagerwriter.application.domain.dto.CategoryDTO;
 import com.ordermanagerwriter.application.exception.CategoryNotFoundException;
 import com.ordermanagerwriter.application.domain.model.Category;
 import com.ordermanagerwriter.infrastructure.entity.CategoryEntity;
@@ -31,6 +32,7 @@ class CategoryServiceImplTest {
     private CategoryRepository categoryRepository;
 
     Category category;
+    CategoryDTO categoryDTO;
 
     CategoryEntity categoryEntity;
 
@@ -38,12 +40,13 @@ class CategoryServiceImplTest {
     void setUp() {
         category = TestUtilityClass.createTestCategory();
         categoryEntity = TestUtilityClass.createTestCategoryEntity(category);
+        categoryDTO = TestUtilityClass.createTestCategoryDTO();
     }
 
     @Test
     @DisplayName("Should create a category")
     void createCategory() {
-        categoryService.createCategory(category);
+        categoryService.createCategory(categoryDTO);
         verify(categoryRepository, times(1)).save(any(CategoryEntity.class));
     }
 
@@ -53,7 +56,7 @@ class CategoryServiceImplTest {
         doThrow(new RuntimeException("Database error")).when(categoryRepository).save(any());
 
         CategoryNotFoundException exception = assertThrows(CategoryNotFoundException.class, () -> {
-            categoryService.createCategory(category);
+            categoryService.createCategory(categoryDTO);
         });
 
         assertEquals("Category with ID test-category-id not found", exception.getMessage());

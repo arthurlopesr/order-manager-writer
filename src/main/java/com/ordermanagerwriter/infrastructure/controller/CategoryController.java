@@ -1,8 +1,10 @@
 package com.ordermanagerwriter.infrastructure.controller;
 
+import com.ordermanagerwriter.application.domain.dto.CategoryDTO;
 import com.ordermanagerwriter.application.domain.model.Category;
 import com.ordermanagerwriter.application.service.CategoryService;
 import lombok.AllArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,9 +18,9 @@ public class CategoryController {
     private final CategoryService categoryService;
 
     @PostMapping
-    public ResponseEntity<Void> createCategory(@RequestBody Category category) {
-        categoryService.createCategory(category);
-        return ResponseEntity.ok().build();
+    public ResponseEntity<Category> createCategory(@RequestBody CategoryDTO category) {
+        var categorySaved = categoryService.createCategory(category);
+        return ResponseEntity.status(HttpStatus.CREATED.value()).body(categorySaved);
     }
 
     @GetMapping("/{categoryId}")

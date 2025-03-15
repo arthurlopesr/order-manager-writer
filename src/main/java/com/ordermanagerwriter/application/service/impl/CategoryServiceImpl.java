@@ -1,5 +1,6 @@
 package com.ordermanagerwriter.application.service.impl;
 
+import com.ordermanagerwriter.application.domain.dto.CategoryDTO;
 import com.ordermanagerwriter.application.exception.CategoryNotFoundException;
 import com.ordermanagerwriter.application.domain.model.Category;
 import com.ordermanagerwriter.application.service.CategoryService;
@@ -17,12 +18,13 @@ public class CategoryServiceImpl implements CategoryService {
     private final CategoryRepository categoryRepository;
 
     @Override
-    public void createCategory(Category category) {
+    public Category createCategory(CategoryDTO category) {
         try {
-            var categoryEntity = CategoryMapper.INSTANCE.toEntity(category);
-            categoryRepository.save(categoryEntity);
+            var categoryEntity = CategoryMapper.INSTANCE.dtoToEntity(category);
+            var savedCategory = categoryRepository.save(categoryEntity);
+            return CategoryMapper.INSTANCE.toModel(savedCategory);
         } catch (Exception e) {
-            throw CategoryNotFoundException.create(category.getCategoryId());
+            throw CategoryNotFoundException.create(category.categoryId());
         }
     }
 
