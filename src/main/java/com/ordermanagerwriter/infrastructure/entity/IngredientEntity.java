@@ -17,6 +17,6 @@ public class IngredientEntity {
     @GeneratedValue(strategy = GenerationType.UUID)
     private String ingredientId;
 
-    @Column(name = "name", nullable = false)
+    @Column(name = "name", nullable = false, unique = true)
     private String name;
 }

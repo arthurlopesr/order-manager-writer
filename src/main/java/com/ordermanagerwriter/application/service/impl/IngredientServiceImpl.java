@@ -1,6 +1,7 @@
 package com.ordermanagerwriter.application.service.impl;
 
 import com.ordermanagerwriter.application.domain.dto.IngredientDTO;
+import com.ordermanagerwriter.application.domain.model.Ingredient;
 import com.ordermanagerwriter.application.service.IngredientService;
 import com.ordermanagerwriter.application.service.mapper.IngredientsMapper;
 import com.ordermanagerwriter.infrastructure.repository.IngredientRepository;
@@ -13,9 +14,9 @@ public class IngredientServiceImpl implements IngredientService {
     private final IngredientRepository ingredientRepository;
 
     @Override
-    public void createIngredient(IngredientDTO ingredientDTO) {
+    public Ingredient createIngredient(IngredientDTO ingredientDTO) {
         var ingredientEntity = IngredientsMapper.INSTANCE.dtoToEntity(ingredientDTO);
-
-        ingredientRepository.save(ingredientEntity);
+        var savedIngredient = ingredientRepository.save(ingredientEntity);
+        return IngredientsMapper.INSTANCE.entityToModel(savedIngredient);
     }
 }

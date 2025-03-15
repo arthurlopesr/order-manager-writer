@@ -1,6 +1,7 @@
 package com.ordermanagerwriter.infrastructure.controller;
 
 import com.ordermanagerwriter.application.domain.dto.IngredientDTO;
+import com.ordermanagerwriter.application.domain.model.Ingredient;
 import com.ordermanagerwriter.application.service.IngredientService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -18,8 +19,8 @@ public class IngredientController {
     private final IngredientService ingredientService;
 
     @PostMapping
-    public ResponseEntity<Void> createIngredient(@RequestBody IngredientDTO ingredientDTO) {
-        ingredientService.createIngredient(ingredientDTO);
-        return ResponseEntity.status(HttpStatus.CREATED.value()).build();
+    public ResponseEntity<Ingredient> createIngredient(@RequestBody IngredientDTO ingredientDTO) {
+        var ingredientSaved = ingredientService.createIngredient(ingredientDTO);
+        return ResponseEntity.status(HttpStatus.CREATED.value()).body(ingredientSaved);
     }
 }

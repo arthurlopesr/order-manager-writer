@@ -1,6 +1,7 @@
 package com.ordermanagerwriter.testUtils;
 
 
+import com.ordermanagerwriter.application.domain.dto.CategoryDTO;
 import com.ordermanagerwriter.application.domain.dto.IngredientDTO;
 import com.ordermanagerwriter.application.domain.dto.ProductDTO;
 import com.ordermanagerwriter.application.domain.model.Category;
@@ -80,7 +81,7 @@ public class TestUtilityClass {
                 .build();
     }
 
-  public static Ingredient createTestIngredient() {
+    public static Ingredient createTestIngredient() {
         return Ingredient.builder()
                 .ingredientId("test-ingredient-id")
                 .name("Test Ingredient")
@@ -91,6 +92,15 @@ public class TestUtilityClass {
         return IngredientDTO.builder()
                 .ingredientId("test-ingredient-id")
                 .name("Test Ingredient")
+                .build();
+    }
+
+    public static CategoryDTO createTestCategoryDTO() {
+        return CategoryDTO.builder()
+                .categoryId("test-category-id")
+                .name("Test Category")
+                .description("This is a test category")
+                .emoji("🍔")
                 .build();
     }
 }
