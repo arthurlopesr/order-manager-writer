@@ -16,7 +16,6 @@ public interface ProductMapper {
     Product toModel(ProductEntity product);
 
     @Mapping(target = "productId", ignore = true)
-    @Mapping(target = "ingredients", source = "ingredients")
     ProductEntity dtoToEntity(ProductDTO product);
 
     List<Product> toModels(List<ProductEntity> productEntities);

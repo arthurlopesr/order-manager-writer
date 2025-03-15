@@ -86,4 +86,11 @@ public class TestUtilityClass {
                 .name("Test Ingredient")
                 .build();
     }
+
+    public static IngredientDTO createTestIngredientDTO() {
+        return IngredientDTO.builder()
+                .ingredientId("test-ingredient-id")
+                .name("Test Ingredient")
+                .build();
+    }
 }

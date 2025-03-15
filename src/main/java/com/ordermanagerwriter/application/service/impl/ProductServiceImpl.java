@@ -1,23 +1,25 @@
 package com.ordermanagerwriter.application.service.impl;
 
-import com.ordermanagerwriter.application.domain.dto.IngredientDTO;
+import com.ordermanagerwriter.application.domain.dto.AssociateProductIngredientsDTO;
 import com.ordermanagerwriter.application.domain.dto.ProductDTO;
+import com.ordermanagerwriter.application.domain.model.Product;
 import com.ordermanagerwriter.application.exception.BusinessException;
 import com.ordermanagerwriter.application.exception.CategoryNotFoundException;
+import com.ordermanagerwriter.application.exception.IngredientNotFoundException;
 import com.ordermanagerwriter.application.exception.ProductNotFoundException;
-import com.ordermanagerwriter.application.domain.model.Product;
 import com.ordermanagerwriter.application.service.ProductService;
 import com.ordermanagerwriter.application.service.mapper.ProductMapper;
 import com.ordermanagerwriter.infrastructure.entity.CategoryEntity;
-import com.ordermanagerwriter.infrastructure.entity.IngredientEntity;
+import com.ordermanagerwriter.infrastructure.entity.ProductsIngredientId;
+import com.ordermanagerwriter.infrastructure.entity.ProductsIngredientsEntity;
 import com.ordermanagerwriter.infrastructure.repository.CategoryRepository;
 import com.ordermanagerwriter.infrastructure.repository.IngredientRepository;
 import com.ordermanagerwriter.infrastructure.repository.ProductRepository;
+import com.ordermanagerwriter.infrastructure.repository.ProductsIngredientsRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -26,22 +28,24 @@ public class ProductServiceImpl implements ProductService {
     private final ProductRepository productRepository;
     private final CategoryRepository categoryRepository;
     private final IngredientRepository ingredientRepository;
+    private final ProductsIngredientsRepository productsIngredientsRepository;
 
     @Override
     public void createProduct(ProductDTO product) {
         try {
             var categoryEntity = findCategoryById(product.categoryId());
-            var ingredientEntities = mapIngredientIdsToEntities(product.ingredients().stream()
-                    .map(IngredientDTO::ingredientId)
-                    .collect(Collectors.toList()));
-
             var productEntity = ProductMapper.INSTANCE.dtoToEntity(product);
             productEntity.setCategory(categoryEntity);
-            productEntity.setIngredients(ingredientEntities);
+            var savedProduct = productRepository.save(productEntity);
 
-            productRepository.save(productEntity);
+            product.ingredients().forEach(ingredientDTO -> {
+                var associateDTO = AssociateProductIngredientsDTO.builder()
+                        .ingredientId(ingredientDTO.ingredientId())
+                        .build();
+                associateIngredients(savedProduct.getProductId(), associateDTO);
+            });
         } catch (Exception e) {
-            throw new BusinessException(String.format("Product creation failed: %s", e.getMessage()).toString());
+            throw new BusinessException(String.format("Product creation failed: %s", e.getMessage()));
         }
     }
 
@@ -69,17 +73,27 @@ public class ProductServiceImpl implements ProductService {
 
     private CategoryEntity findCategoryById(String categoryId) {
         return categoryRepository.findById(categoryId)
-                .orElseThrow(() -> new CategoryNotFoundException(categoryId));
+                .orElseThrow(() -> CategoryNotFoundException.create(categoryId));
     }
 
-    private IngredientEntity findIngredientById(String ingredientId) {
-        return ingredientRepository.findById(ingredientId)
-                .orElseThrow(() -> new BusinessException(String.format("Ingredient with id %s not found", ingredientId)));
-    }
+    private void associateIngredients(String productId, AssociateProductIngredientsDTO associateProductIngredientsDTO) {
+        var ingredientEntity = ingredientRepository.findById(associateProductIngredientsDTO.ingredientId())
+                .orElseThrow(() -> IngredientNotFoundException.create(associateProductIngredientsDTO.ingredientId()));
+        var productEntity = productRepository.findById(productId)
+                .orElseThrow(() -> ProductNotFoundException.create(productId));
 
-    private List<IngredientEntity> mapIngredientIdsToEntities(List<String> ingredientIds) {
-        return ingredientIds.stream()
-                .map(this::findIngredientById)
-                .collect(Collectors.toList());
+        var productsIngredientId = ProductsIngredientId.builder()
+                .productId(productEntity.getProductId())
+                .ingredientId(ingredientEntity.getIngredientId())
+                .build();
+
+        var productsIngredientsEntity = ProductsIngredientsEntity.builder()
+                .productsIngredientId(productsIngredientId)
+                .ingredient(ingredientEntity)
+                .product(productEntity)
+                .productName(productEntity.getName())
+                .build();
+
+        productsIngredientsRepository.save(productsIngredientsEntity);
     }
 }

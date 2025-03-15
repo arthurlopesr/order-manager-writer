@@ -3,8 +3,6 @@ package com.ordermanagerwriter.infrastructure.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.util.List;
-
 @Entity
 @Getter
 @Builder
@@ -19,17 +17,14 @@ public class ProductEntity {
     @GeneratedValue(strategy = GenerationType.UUID)
     private String productId;
 
-    @Column(name = "name", nullable = false)
+    @Column(name = "name", unique = true, nullable = false)
     private String name;
 
-    @Column(name = "description", unique = true, nullable = false)
+    @Column(name = "description", nullable = false)
     private String description;
 
     @Column(name = "price", nullable = false)
     private String price;
-
-    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<IngredientEntity> ingredients;
 
     @Column(name = "image_id")
     private String imageId;
