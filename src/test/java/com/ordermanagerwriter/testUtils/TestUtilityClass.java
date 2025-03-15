@@ -103,4 +103,8 @@ public class TestUtilityClass {
                 .emoji("🍔")
                 .build();
     }
+
+    public ProductEntity createProductEntity(ProductDTO product) {
+        return ProductMapper.INSTANCE.dtoToEntity(product);
+    }
 }
