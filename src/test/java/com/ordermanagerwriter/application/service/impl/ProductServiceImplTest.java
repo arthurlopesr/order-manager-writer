@@ -3,8 +3,10 @@ package com.ordermanagerwriter.application.service.impl;
 import com.ordermanagerwriter.application.domain.dto.ProductDTO;
 import com.ordermanagerwriter.application.exception.BusinessException;
 import com.ordermanagerwriter.infrastructure.entity.CategoryEntity;
+import com.ordermanagerwriter.infrastructure.entity.IngredientEntity;
 import com.ordermanagerwriter.infrastructure.entity.ProductEntity;
 import com.ordermanagerwriter.infrastructure.repository.CategoryRepository;
+import com.ordermanagerwriter.infrastructure.repository.IngredientRepository;
 import com.ordermanagerwriter.infrastructure.repository.ProductRepository;
 import com.ordermanagerwriter.testUtils.TestUtilityClass;
 import org.junit.jupiter.api.BeforeEach;
@@ -17,6 +19,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Optional;
 
+import static com.ordermanagerwriter.testUtils.TestUtilityClass.createTestIngredient;
+import static com.ordermanagerwriter.testUtils.TestUtilityClass.createTestIngredientEntity;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
@@ -34,20 +38,27 @@ class ProductServiceImplTest {
     @Mock
     private ProductRepository productRepository;
 
+    @Mock
+    private IngredientRepository ingredientRepository;
+
     private ProductDTO product;
     private CategoryEntity categoryEntity;
+    private IngredientEntity ingredientEntity;
 
     @BeforeEach
     void setUp() {
         product = TestUtilityClass.createTestProduct();
         categoryEntity = new CategoryEntity();
         categoryEntity.setCategoryId(product.categoryId());
+        ingredientEntity = createTestIngredientEntity(createTestIngredient());
     }
 
     @Test
     @DisplayName("Should create a product successfully")
     void createProduct() {
         when(categoryRepository.findById(product.categoryId())).thenReturn(Optional.of(categoryEntity));
+        when(ingredientRepository.findById("test-ingredient-id-1")).thenReturn(Optional.of(ingredientEntity));
+        when(ingredientRepository.findById("test-ingredient-id-2")).thenReturn(Optional.of(ingredientEntity));
         productService.createProduct(product);
         verify(productRepository, times(1)).save(any(ProductEntity.class));
     }
@@ -64,6 +75,8 @@ class ProductServiceImplTest {
     @DisplayName("Should throw BusinessException when product creation fails")
     void createProductThrowsBusinessException() {
         when(categoryRepository.findById(product.categoryId())).thenReturn(Optional.of(categoryEntity));
+        when(ingredientRepository.findById("test-ingredient-id-1")).thenReturn(Optional.of(ingredientEntity));
+        when(ingredientRepository.findById("test-ingredient-id-2")).thenReturn(Optional.of(ingredientEntity));
         doThrow(new RuntimeException("Database error")).when(productRepository).save(any(ProductEntity.class));
         BusinessException exception = assertThrows(BusinessException.class, () -> productService.createProduct(product));
         assertEquals("Product creation failed: Database error", exception.getMessage());

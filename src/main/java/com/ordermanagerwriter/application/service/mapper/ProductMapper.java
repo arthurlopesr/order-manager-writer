@@ -9,14 +9,14 @@ import org.mapstruct.factory.Mappers;
 
 import java.util.List;
 
+
 @Mapper
 public interface ProductMapper {
+
     Product toModel(ProductEntity product);
 
     @Mapping(target = "productId", ignore = true)
-    ProductEntity modelToEntity(Product product);
-
-    @Mapping(target = "productId", ignore = true)
+    @Mapping(target = "ingredients", source = "ingredients")
     ProductEntity dtoToEntity(ProductDTO product);
 
     List<Product> toModels(List<ProductEntity> productEntities);

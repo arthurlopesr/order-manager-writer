@@ -3,6 +3,8 @@ package com.ordermanagerwriter.infrastructure.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.List;
+
 @Entity
 @Getter
 @Builder
@@ -26,9 +28,8 @@ public class ProductEntity {
     @Column(name = "price", nullable = false)
     private String price;
 
-    @OneToMany
-    @JoinColumn(name = "ingredient_id",  nullable = false)
-    private IngredientEntity ingredients;
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<IngredientEntity> ingredients;
 
     @Column(name = "image_id")
     private String imageId;
