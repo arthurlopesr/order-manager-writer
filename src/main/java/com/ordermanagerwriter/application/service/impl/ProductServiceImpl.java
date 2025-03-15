@@ -3,7 +3,6 @@ package com.ordermanagerwriter.application.service.impl;
 import com.ordermanagerwriter.application.domain.dto.AssociateProductIngredientsDTO;
 import com.ordermanagerwriter.application.domain.dto.ProductDTO;
 import com.ordermanagerwriter.application.domain.model.Product;
-import com.ordermanagerwriter.application.domain.model.ProductIngredients;
 import com.ordermanagerwriter.application.exception.BusinessException;
 import com.ordermanagerwriter.application.exception.CategoryNotFoundException;
 import com.ordermanagerwriter.application.exception.IngredientNotFoundException;
@@ -66,15 +65,29 @@ public class ProductServiceImpl implements ProductService {
         productModel.setIngredients(ingredientModels);
         return productModel;
     }
+
     @Override
     public List<Product> findAllProducts() {
         var productEntities = productRepository.findAll();
-        return ProductMapper.INSTANCE.toModels(productEntities);
+        var productIngredients = productEntities.stream()
+                .map(productEntity -> productsIngredientsRepository.findByProductsIngredientIdProductId(productEntity.getProductId()))
+                .flatMap(List::stream)
+                .toList();
+        var ingredientModels = productIngredients.stream()
+                .map(ProductsIngredientsEntity::getIngredient)
+                .map(IngredientMapper.INSTANCE::toModel)
+                .toList();
+
+        var productModels = ProductMapper.INSTANCE.toModels(productEntities);
+        productModels.forEach(product -> product.setIngredients(ingredientModels));
+        return productModels;
     }
 
     @Override
     public void deleteProductById(String productId) {
         try {
+            var productIngredients = productsIngredientsRepository.findByProductsIngredientIdProductId(productId);
+            productsIngredientsRepository.deleteAll(productIngredients);
             productRepository.deleteById(productId);
         } catch (Exception e) {
             throw ProductNotFoundException.create(productId);

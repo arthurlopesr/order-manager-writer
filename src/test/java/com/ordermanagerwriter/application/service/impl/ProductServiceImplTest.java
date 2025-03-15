@@ -3,6 +3,7 @@ package com.ordermanagerwriter.application.service.impl;
 import com.ordermanagerwriter.application.domain.dto.ProductDTO;
 import com.ordermanagerwriter.application.domain.model.ProductIngredients;
 import com.ordermanagerwriter.application.exception.BusinessException;
+import com.ordermanagerwriter.application.exception.ProductNotFoundException;
 import com.ordermanagerwriter.application.service.mapper.IngredientMapper;
 import com.ordermanagerwriter.application.service.mapper.ProductMapper;
 import com.ordermanagerwriter.infrastructure.entity.*;
@@ -121,5 +122,34 @@ class ProductServiceImplTest {
         productModel.setIngredients(ingredientModels);
         var result = productService.findProductById(product.productId());
         assertEquals(productModel, result);
+    }
+
+    @Test
+    @DisplayName("Should throw ProductNotFoundException when product is not found")
+    void findProductByIdThrowsProductNotFoundException() {
+        when(productRepository.findById(product.productId())).thenReturn(Optional.empty());
+        assertThrows(ProductNotFoundException.class, () -> productService.findProductById(product.productId()));
+    }
+
+    @Test
+    @DisplayName("Should return all products successfully")
+    void findAllProducts() {
+        var productEntities = List.of(productEntity);
+        when(productRepository.findAll()).thenReturn(productEntities);
+        when(productsIngredientsRepository.findByProductsIngredientIdProductId(productEntity.getProductId())).thenReturn(List.of(productsIngredientsEntity));
+        var ingredientModels = List.of(IngredientMapper.INSTANCE.toModel(ingredientEntity));
+        var productModels = List.of(ProductMapper.INSTANCE.toModel(productEntity));
+        productModels.forEach(product -> product.setIngredients(ingredientModels));
+        var result = productService.findAllProducts();
+        assertEquals(productModels, result);
+    }
+
+    @Test
+    @DisplayName("Should delete a product successfully")
+    void deleteProductById() {
+        when(productsIngredientsRepository.findByProductsIngredientIdProductId(product.productId())).thenReturn(List.of(productsIngredientsEntity));
+        productService.deleteProductById(product.productId());
+        verify(productsIngredientsRepository, times(1)).deleteAll(List.of(productsIngredientsEntity));
+        verify(productRepository, times(1)).deleteById(product.productId());
     }
 }
